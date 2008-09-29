@@ -1,0 +1,105 @@
+h1. Buck up -- Globalize.  Little Translator makes it easy.
+
+h2. Overview
+
+Little Translator is a plugin and a service that helps you manage and translate your application's localized strings.
+
+h2. Details
+
+h3. Getting Started
+
+In an initializer, say maybe _little_translator.rb_
+
+<pre>
+<code>
+LittleTranslator.configure do |config|
+  config.api_key = 'abc123'
+  config.api_secret = 'xyz098'
+end
+</code>
+</pre>
+
+h3. Create some strings
+
+<pre>
+<code>
+mkdir -p app/locales/en-US
+cat > app/locales/en-US/hello.yml
+welcome: Welcome
+teaser: Sign in for the good stuff!
+num_photos:
+  one: 1 photo
+  other: {{count}} photos
+have_any: Do you have any {{items}}, "dude"?
+</code>
+</pre>
+
+h3. Use them in a view
+
+_t_ and _pt_ helpers translate and html-escape
+
+<pre>
+<code>
+<%=t "hello.welcome" %>
+<%=pt "hello.num_photos", 5 %>
+<%=t "hello.have_any", :items => "<i>beans</i>" %>
+</code>
+</pre>
+
+produces:
+
+<pre>
+<code>
+Welcome
+5 photos
+Do you have any <i>beans</i>, &quot;dude&quot;?
+</code>
+</pre>
+
+h3. Use them elsewhere
+
+<pre>
+<code>
+:"hello.welcome".t                     # => "Welcome"
+:"hello.num_photos".pt(5)              # => "5 photos"
+:"hello.have_any".t(:items => "beans") # => "Do you have any beans, "dude"?"
+</code>
+</pre>
+
+or plain old strings, if you prefer
+
+<pre>
+<code>
+"hello.welcome".t                     # => "Welcome"
+"hello.num_photos".pt(5)              # => "5 photos"
+"hello.have_any".t(:items => "beans") # => "Do you have any beans, "dude"?"
+</code>
+</pre>
+
+h2. LittleTranslator Magic
+
+h3. Sync your translations
+
+<pre>
+<code>
+rake translations:sync
+</code>
+</pre>
+
+h3. Visit the website
+
+http://www.littletranslator.com/
+
+Once there you can add desired locales, create accounts for translators, even translate your own strings.
+
+h3. Sync again
+
+<pre>
+<code>
+rake translations:sync
+</code>
+</pre>
+
+<hr>
+
+Copyright (c) 2008 Little Foundry, released under the MIT license
