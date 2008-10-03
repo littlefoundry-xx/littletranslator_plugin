@@ -4,8 +4,12 @@ namespace :translations do
     reader = LittleTranslator::Reader.new
     response = LittleTranslator::Connection.sync!(reader.translations)
     response = Hash.from_xml(response.body)['response']
-    writer = LittleTranslator::Writer.new
-    writer.translations = response['translations']
+    if response['translations'].nil?
+      puts "nothing to write!"
+    else
+      writer = LittleTranslator::Writer.new
+      writer.translations = response['translations']
+    end
   end
 
   desc "Show translation statistics"

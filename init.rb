@@ -1,2 +1,2 @@
 require 'json'
-require 'little_translator'
+require File.join(File.dirname(__FILE__), 'lib', 'little_translator')
