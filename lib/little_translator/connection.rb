@@ -9,12 +9,12 @@ module LittleTranslator
       {:options => hash}.to_query
     end
 
-    def self.development_locale
-      @@development_locale ||= self.get("#{self.prefix}development_locale.xml")['message']
+    def self.locale
+      @@locale ||= self.get("#{self.prefix}locale.xml")['message']
     end
 
     def self.sync!(translations)
-      self.post("#{self.prefix}sync.xml?#{self.options_query}", translations[self.development_locale].to_xml(:root => 'translations'))
+      self.post("#{self.prefix}sync.xml?#{self.options_query}", translations[self.locale].to_xml(:root => 'translations'))
     end
 
     protected
