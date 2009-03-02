@@ -1,6 +1,8 @@
 module LittleTranslator
+
   class Connection < ActiveResource::Base
     self.site = 'http://localhost:3000/api/v1/'
+    self.format = :json
     requires_signage
 
     def self.options_query
@@ -10,11 +12,12 @@ module LittleTranslator
     end
 
     def self.locale
-      @@locale ||= self.get("#{self.prefix}locale.xml")['message']
+      @@locale ||= self.get("#{self.prefix}locale.json")['response']['message']
     end
 
     def self.sync!(translations)
-      self.post("#{self.prefix}sync.xml?#{self.options_query}", translations[self.locale].to_xml(:root => 'translations'))
+      response = self.post("#{self.prefix}sync.json?#{self.options_query}", {:translations => translations[self.locale]}.to_json)
+      ActiveSupport::JSON.decode(response.body)['response']['translations']
     end
 
     protected
@@ -31,7 +34,7 @@ module LittleTranslator
         begin
           yield
           rescue ActiveResource::ConnectionError => e
-            error = Hash.from_xml(e.response.body)['response']
+            error = ActiveSupport::JSON.decode(e.response.body)['response']
             puts "ERROR: #{error['message']}"
             exit
           rescue => e
@@ -41,4 +44,5 @@ module LittleTranslator
         end
       end
   end
+
 end

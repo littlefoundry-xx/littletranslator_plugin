@@ -19,10 +19,13 @@ module LittleTranslator
     def read_locale_files
       Dir[File.join(Settings.locale_path, '**', '*.yml')].each do |file|
         matches = file.match(%r{^#{Settings.locale_path}/([-_\w]+)/([-_\w]+)[.]yml$})
-        next unless matches
-        locale, section = matches[1], matches[2]
-        data = YAML.load_file(file)
-        yield [locale, section, data]
+        if matches
+          locale, section = matches[1], matches[2]
+          data = YAML.load_file(file)
+          yield [locale, section, data]
+        else
+          logger.warn "ignoring #{file.sub(RAILS_ROOT, '')}, did not recognize filename."
+        end
       end
     end
 

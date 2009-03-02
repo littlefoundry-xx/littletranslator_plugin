@@ -6,9 +6,13 @@ module SignedResource
 
   module Base
     def connection(refresh = false)
-      @connection = SignedResource::Connection.new(site) if refresh || @connection.nil?
+      @connection = SignedResource::Connection.new(site, format) if refresh || @connection.nil? || !(@connection === SignedResource::Connection)
+      @connection.user = user if user
+      @connection.password = password if password
+      @connection.timeout = timeout if timeout
       @connection
     end
+
     def self.random_string(length = 8)
       chars = ("a".."z").to_a + ("0".."9").to_a + ("A".."Z").to_a
       Array.new(length, '').collect{chars[rand(chars.size)]}.join 
@@ -18,7 +22,6 @@ module SignedResource
   class Connection < ActiveResource::Connection
     cattr_accessor :api_key
     cattr_accessor :api_secret
-
 
     protected
 
@@ -56,8 +59,10 @@ module SignedResource
         time = Benchmark.realtime { result = http.send(method, path, *arguments) }
         logger.info "--> #{result.code} #{result.message} (#{result.body.length}b %.2fs)" % time if logger
         key = EzCrypto::Key.with_password(api_key, api_secret)
-        result.instance_eval "@body = #{key.decrypt64(result.body).inspect}" # @body is protected
+        result.send(:instance_variable_set, '@body', key.decrypt64(result.body))
         handle_response(result)
+      rescue Timeout::Error => e
+        raise TimeoutError.new(e.message)
       end
   end
 end
