@@ -1,0 +1,8 @@
+--- 
+vendor/rails-i18n-translation-inheritance-helper: 
+  squashed: true
+  url: git://github.com/kipcole9/rails-i18n-translation-inheritance-helper.git
+  type: git
+  revision: e14e2d0ee8a8162808516c175d0e409fc4d76e3f
+  branch: master
+  remote: braid/vendor/rails-i18n-translation-inheritance-helper
