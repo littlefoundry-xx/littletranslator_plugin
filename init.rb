@@ -14,3 +14,24 @@ else
   # load 'em up here, and we won't do it ever again
   LittleTranslator.load_translations!
 end
+
+unless ::I18n.respond_to?(:available_locales)
+  module ::I18n
+    class << self
+      def available_locales
+        backend.available_locales
+      end
+    end
+  
+    module Backend
+      class Simple
+        def available_locales
+          translations.keys
+        end
+      end
+    end
+  end
+end  
+
+require File.join(File.dirname(__FILE__), 'vendor', 'rails-i18n-translation-inheritance-helper', 'lib', 'i18n_translation_helper')
+::I18n.send(:include, I18nTranslationHelper)
